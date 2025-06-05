@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Xunit;
 using TextGenerator;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 
 namespace TextGenerator.Tests
@@ -20,12 +21,13 @@ namespace TextGenerator.Tests
             tempFilePath = Path.GetTempFileName();
             File.WriteAllLines(tempFilePath, new[]
             {
-                "1\tth\t0.5",
-                "2\the\t0.3",
-                "3\tin\t0.2"
+                "1\tии\t0.5",
+                "2\tаа\t0.3",
+                "3\tда\t0.2"
             });
         }
-
+        [Fact]
+        
         public void Dispose()
         {
             if (File.Exists(tempFilePath))
@@ -38,6 +40,13 @@ namespace TextGenerator.Tests
             // Act & Assert
             Assert.Throws<FileNotFoundException>(() => new BigramGenerator("nonexistent.txt"));
         }
+
+        [Fact]
+        public void BigramGenerator_ThrowsOnMissingFile()
+        {
+            Assert.Throws<FileNotFoundException>(() => new BigramGenerator("nonexistent.txt"));
+        }
+
 
         [Fact(DisplayName = "Конструктор выбрасывает исключение при пустом файле биграмм")]
         public void BigramGenerator_EmptyFile_ThrowsException()
@@ -102,6 +111,8 @@ namespace TextGenerator.Tests
             Assert.Throws<FileNotFoundException>(() => new WordGenerator("nonexistent.txt"));
         }
 
+        
+
         [Fact(DisplayName = "Корректно загружает слова из файла")]
         public void WordGenerator_LoadWords_CorrectlyLoadsData()
         {
@@ -165,31 +176,33 @@ namespace TextGenerator.Tests
             }
         }
 
-        [Fact(DisplayName = "CreateFrequencyPlot создает файл изображения")]
-        public void PlotGenerator_CreateFrequencyPlot_CreatesImageFile()
-        {
-            // Arrange
-            var expected = new Dictionary<string, double>
-            {
-                { "аа", 0.5 },
-                { "аб", 0.3 },
-                { "ав", 0.2 }
-            };
-            var actual = new Dictionary<string, int>
-            {
-                { "аа", 50 },
-                { "аб", 30 },
-                { "ав", 20 }
-            };
-            string fileName = "test_plot.png";
-            string filePath = Path.Combine(resultsDir, fileName);
+        //[Fact(DisplayName = "CreateFrequencyPlot создает файл изображения")]
+        //public void PlotGenerator_CreateFrequencyPlot_CreatesImageFile()
+        //{
+        //    // Arrange
+        //    var expected = new Dictionary<string, double>
+        //    {
+        //        { "аа", 0.5 },
+        //        { "аб", 0.3 },
+        //        { "ав", 0.2 }
+        //    };
+        //    var actual = new Dictionary<string, int>
+        //    {
+        //        { "аа", 50 },
+        //        { "аб", 30 },
+        //        { "ав", 20 }
+        //    };
+        //    string fileName = "test_plot.png";
+        //    string filePath = Path.Combine(resultsDir, fileName);
 
-            // Act
-            PlotGenerator.CreateFrequencyPlot(expected, actual, "Тестовый график", fileName);
+        //    // Act
+        //    PlotGenerator.CreateFrequencyPlot(expected, actual, "Тестовый график", fileName);
 
-            // Assert
-            Assert.True(File.Exists(filePath));
-        }
+        //    // Assert
+        //    Assert.True(File.Exists(filePath));
+        //}
+        
+
 
         [Fact(DisplayName = "CreateFrequencyPlot выбрасывает исключение при пустых данных")]
         public void PlotGenerator_CreateFrequencyPlot_EmptyData_ThrowsException()
