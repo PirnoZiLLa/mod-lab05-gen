@@ -17,6 +17,25 @@ namespace TextGenerator
         public BigramGenerator(string filename)
         {
             if (!File.Exists(filename))
+                throw new FileNotFoundException("Файл не найден", filename);
+
+            var lines = File.ReadAllLines(filename);
+            if (lines.Length == 0)
+            throw new InvalidOperationException("Файл пуст");
+
+        foreach (var line in lines)
+        {
+            var parts = line.Split('\t');
+            if (parts.Length != 3)
+            throw new InvalidOperationException($"Неверный формат строки: {line}");
+
+        
+            if (!double.TryParse(parts[2], out double freq))
+                throw new InvalidOperationException($"Неверный формат частоты в строке: {line}");
+
+        
+        }
+            if (!File.Exists(filename))
                 throw new FileNotFoundException($"File {filename} not found");
 
             LoadBigrams(filename);
