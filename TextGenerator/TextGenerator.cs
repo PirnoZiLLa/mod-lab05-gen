@@ -59,6 +59,27 @@ namespace TextGenerator.Tests
 
             File.Delete(invalidFilePath);
         }
+
+        [Fact(DisplayName = "BigramGenerator корректно загружает биграммы")]
+        public void BigramGenerator_LoadsBigramsCorrectly()
+        {
+            var generator = new BigramGenerator(tempFilePath);
+            var distribution = generator.GetExpectedDistribution();
+
+            Assert.Equal(3, distribution.Count);
+            Assert.Equal(0.5, distribution["ии"]);
+            Assert.Equal(0.3, distribution["аа"]);
+            Assert.Equal(0.2, distribution["да"]);
+        }
+
+        [Fact(DisplayName = "BigramGenerator генерирует текст правильной длины")]
+        public void BigramGenerator_GeneratesCorrectLengthText()
+        {
+            var generator = new BigramGenerator(tempFilePath);
+            string text = generator.GenerateText(100);
+            
+            Assert.Equal(200, text.Length); // 100 биграм = 200 символов
+        }
     }
 
     public class WordGeneratorTests : IDisposable
@@ -118,6 +139,21 @@ namespace TextGenerator.Tests
             var generator = new WordGenerator(tempFilePath);
             Assert.Throws<ArgumentException>(() => generator.GenerateText(0));
             Assert.Throws<ArgumentException>(() => generator.GenerateText(-1));
+        }
+
+        [Fact(DisplayName = "WordGenerator генерирует слова из ожидаемого распределения")]
+        public void WordGenerator_GeneratesWordsFromExpectedDistribution()
+        {
+            var generator = new WordGenerator(tempFilePath);
+            string text = generator.GenerateText(1000);
+            var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            
+            // Проверяем, что все сгенерированные слова есть в исходном распределении
+            var distribution = generator.GetExpectedDistribution();
+            foreach (var word in words)
+            {
+                Assert.Contains(word, distribution.Keys);
+            }
         }
     }
 }
